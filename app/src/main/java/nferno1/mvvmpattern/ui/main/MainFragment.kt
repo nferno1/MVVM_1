@@ -24,7 +24,7 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentMainBinding
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels{MainViewModelFactory()}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

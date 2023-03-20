@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MainViewModel"
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    private val repository: MainRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow<State>(State.Succes)
 
@@ -52,8 +54,15 @@ class MainViewModel : ViewModel() {
 
             } else {
                 _state.value = State.Loading
-                delay(5_000)
-                _state.value = State.Succes
+                try {
+                    repository.getData()
+                    _state.value = State.Succes
+                } catch (e: Exception) {
+
+                    _error.send(e.toString())
+                    _state.value = State.Error(null, null)
+                }
+
             }
 
         }
