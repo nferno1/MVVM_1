@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
 import nferno1.mvvmpattern.databinding.FragmentMainBinding
 
@@ -51,11 +53,32 @@ class MainFragment : Fragment() {
                       when(state){
                           State.Loading -> {
                               binding.progressBar.isVisible = true
+                              binding.loginLayout.error = null
+                              binding.passwordLayout.error = null
+                              binding.button.isEnabled = false
                           }
                           State.Succes -> {
                               binding.progressBar.isVisible = false
+                              binding.loginLayout.error = null
+                              binding.passwordLayout.error = null
+                              binding.button.isEnabled = true
                           }
+                          is State.Error -> {
+                              binding.progressBar.isInvisible = false
+                              binding.loginLayout.error = state.loginError
+                              binding.passwordLayout.error = state.passwordError
+                              binding.button.isEnabled = true
+
+                          }
+
                       }
+                    }
+            }
+        viewLifecycleOwner.lifecycleScope
+            .launchWhenStarted {
+                viewModel.error
+                    .collect{ message ->
+                        Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
                     }
             }
 
